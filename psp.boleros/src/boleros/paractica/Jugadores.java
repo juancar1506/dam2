@@ -25,6 +25,7 @@ public class Jugadores  implements Runnable{
         this.aciertos = new ArrayList<>();
         while(Boolean.TRUE.equals(ejecutar)) {
             synchronized (b) {
+
                 //Si el hilo contiene cuatro aciertos. 
                 //Se notificara del gandor y se enviara una otrden para detener los demas hilos.
                 if (aciertos.size() == 4) {
@@ -32,15 +33,17 @@ public class Jugadores  implements Runnable{
                     System.out.println("**********************************");
                     ejecutar = false;
                     b.setEjecutar(false);
-                    b.notifyAll();    
-                }//End if
+                    b.notifyAll();
+                        
+                } //End if
 
                 //Verifica que el objeto bolero no se este ejecutando,
                 //Este es el caso para los jugadores que no han ganado
                 if(!Boolean.TRUE.equals(b.getEjecutar())) {
                     ejecutar = false;
                     Thread.currentThread().interrupt();
-                }//End if
+
+                } //End if
 
                 //Ejecucion que se realizara cuando no haya un ganador
                 if(Boolean.TRUE.equals(ejecutar)) {
@@ -48,6 +51,7 @@ public class Jugadores  implements Runnable{
                         System.out.println("***********************************");
                         System.out.println("Esperando la bola");
                         b.wait();
+
                     } catch (InterruptedException e) {
                         Thread.currentThread().interrupt(); 
                     }
@@ -62,15 +66,18 @@ public class Jugadores  implements Runnable{
                             this.aciertos.add(true);
                             System.out.println("Aciertos: " +aciertos.size());
                             System.out.println("*********************************");
+
                         }//End if
 
-                    }//End for
+                    } //End for
                     
-                }//End if
-            }
-        }
+                } //End if
+
+            } //End synchronized
+
+        } //End while
        
-    }
+    } // ENd run
 
     
 }

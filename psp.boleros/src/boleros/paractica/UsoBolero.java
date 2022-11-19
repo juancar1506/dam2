@@ -12,6 +12,7 @@ public class UsoBolero {
          //Se crea y se inicia un hilo para generar numeros aleatorios entre 1-50 
          new Thread(new GenerarNumero(b)).start();
 
+         //Se crean los jugadores y sus hilos
          new Thread(new Jugadores("Jose Luis", generarNumeros(), b)).start();
          new Thread(new Jugadores("Cristina", generarNumeros(), b)).start();
          new Thread(new Jugadores("Maria", generarNumeros(), b)).start();
@@ -23,10 +24,11 @@ public class UsoBolero {
     public static List<Number> generarNumeros() {
         List<Number> numeros = new ArrayList<>();
         int i = 0;
+
         while (i<MAX_NUMEROS) {
             numeros.add(generarNumero());
             i++;
-        }        
+        } //End while       
 
         return numeros;
     }
