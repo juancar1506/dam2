@@ -1,0 +1,107 @@
+Implementar room
+
+1  Instalar dependencias necesarias para su uso
+
+    implementation 'androidx.room:room-runtime:2.4.3'
+    annotationProcessor 'androidx.room:room-compiler:2.4.3'
+    annotationProcessor 'androidx.room:room-testing:2.4.3'
+
+2 Crear un objeto database
+
+	@Database(entities = {
+			ListElementBicis.class //Nombre las entidades que se usan
+	}, version = 1)
+	public abstract class AppDatabase extends RoomDatabase { //extension RoomDatabase
+
+		public static AppDatabase INSTANCE;
+
+		public abstract BicicletaDao bicicletaDao();// Implemetacion del objeto dao en la base
+
+		public static AppDatabase getInstance(Context context){
+			if(INSTANCE == null) {
+				INSTANCE = Room.databaseBuilder(context,AppDatabase.class, "bicicletas.db")
+						.allowMainThreadQueries().fallbackToDestructiveMigration()
+						.build();
+			}
+			return INSTANCE;
+		}
+	}
+
+3 Crear interfaz dao y repository
+	
+	@Dao
+	public interface BicicletaDao {
+
+		@Query("select * from Bicicleta")
+		public List<ListElementBicis> getALl();
+
+		@Query("select * from Bicicleta where id = :id")
+		public ListElementBicis findById(int id);
+
+		@Insert
+		void insert(ListElementBicis b);
+
+		@Delete
+		void  delete(ListElementBicis b);
+	}
+	
+	public interface BicicletaRepository {
+
+		List<ListElementBicis> getAllBicis();
+		ListElementBicis fidByBiciId(int id);
+		void insertBici(ListElementBicis b);
+		void deleteBici(ListElementBicis b);
+	}
+	
+4. Crear clase que implemte el ropsitorio
+	public class BicicletaRepositoryImpl implements BicicletaRepository{
+
+		BicicletaDao dao;
+
+		public BicicletaRepositoryImpl(BicicletaDao dao) {
+			this.dao = dao;
+		}
+
+		@Override
+		public List<ListElementBicis> getAllBicis() {
+			return dao.getALl();
+		}
+
+		@Override
+		public ListElementBicis fidByBiciId(int id) {
+			return dao.findById(id);
+		}
+
+		@Override
+		public void insertBici(ListElementBicis b) {
+			dao.insert(b);
+		}
+
+		@Override
+		public void deleteBici(ListElementBicis b) {
+			dao.delete(b);
+		}
+	}
+
+5.  Declarar y utilizar la base de datos en mi actividad principal
+
+		AppDatabase db;
+		BicicletaDao dao;
+		BicicletaRepository repo;
+		db = AppDatabase.getInstance(this.getApplicationContext());
+        dao = db.bicicletaDao();
+        repo = new BicicletaRepositoryImpl(dao);
+		//Se utilizan las clases del repositorio
+		
+		
+Para cominicar con otra actividad un objeto recuperado por base de datos usamos intent, se pasa a la clase hija como bundle.
+                    Intent intent = new Intent(context, DetalllesBicicleta.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("bicicleta",item);
+                    intent.putExtras(bundle);
+                    context.startActivity(intent);
+					
+Implemetacion en la clase hija 
+        Intent intent = getIntent();
+        Bundle bundle = intent.getExtras();
+        ListElementBicis b = (ListElementBicis) bundle.getSerializable("bicicleta");

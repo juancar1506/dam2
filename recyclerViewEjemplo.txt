@@ -1,0 +1,198 @@
+Creacion de RycliclerView
+
+
+Dependencias (Agregar a la carpeta Gradle Scripts --> build.gradle --> Module: Model.app)
+
+	- implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    - implementation 'androidx.recyclerview:recyclerview:1.2.1'
+	    implementation 'androidx.cardview:cardview:1.0.0'
+
+Elementos XML
+
+	MainActivity
+	- Crear una actividad con un elemento: androidx.recyclerview.widget.RecyclerView
+	-Propiedades id, width y height. (Minimas requeridas)
+	Caso Personal:
+		<androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/listaBicis"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+	
+	ListELement
+	-S ha usado un modelo tarjeta androidx.cardview.widget.CardView para la practica
+	atributo necesario id:
+		<androidx.cardview.widget.CardView
+				xmlns:android="http://schemas.android.com/apk/res/android"
+				xmlns:app="http://schemas.android.com/apk/res-auto"
+				xmlns:tools="http://schemas.android.com/tools"
+				android:id="@+id/bicis"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:animateLayoutChanges="true"
+				app:cardCornerRadius="20dp"
+				app:cardMaxElevation="4dp"
+				app:cardUseCompatPadding="true">
+				<LinearLayout
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:animateLayoutChanges="true"
+					android:orientation="vertical">
+			
+					<RelativeLayout
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:background="@color/colorPrimaryOpacidad10"
+						android:orientation="horizontal"
+						android:padding="6dp">
+			
+						<ImageView
+							android:id="@+id/iconImageView"
+							android:layout_width="110dp"
+							android:layout_height="80dp"
+							android:layout_alignParentStart="true"
+							android:layout_alignParentLeft="true"
+							android:layout_centerVertical="true"
+							android:paddingLeft="14dp"
+							android:paddingRight="14dp"
+							android:scaleType="centerCrop"
+							android:layout_marginLeft="10dp"
+							app:srcCompat="@drawable/bicicleta" />
+			
+						<LinearLayout
+							android:id="@+id/linearTitulo"
+							android:layout_width="wrap_content"
+							android:layout_height="wrap_content"
+							android:layout_alignParentTop="true"
+							android:layout_marginStart="4dp"
+							android:layout_marginLeft="4dp"
+							android:layout_marginTop="2dp"
+							android:layout_toEndOf="@+id/iconImageView"
+							android:layout_toRightOf="@+id/iconImageView"
+							android:orientation="vertical">
+			
+							<TextView
+								android:id="@+id/nombreTextView"
+								android:layout_width="match_parent"
+								android:layout_height="wrap_content"
+								android:layout_marginBottom="2dp"
+								android:text="Modelo"
+								android:textColor="@color/colorPrimary"
+								android:textSize="24sp"
+								android:textStyle="bold" />
+			
+							<TextView
+								android:id="@+id/marcaTextView"
+								android:layout_width="match_parent"
+								android:layout_height="wrap_content"
+								android:textSize="18sp"
+								android:text="Marca" />
+						</LinearLayout>
+			
+						<LinearLayout
+							android:layout_width="wrap_content"
+							android:layout_height="wrap_content"
+							android:orientation="vertical"
+							android:layout_alignParentTop="true"
+							android:layout_marginStart="4dp"
+							android:layout_marginLeft="4dp"
+							android:layout_marginTop="2dp"
+							android:layout_toEndOf="@+id/linearTitulo"
+							android:layout_toRightOf="@+id/linearTitulo">
+			
+							<TextView
+								android:id="@+id/DescripcionTextView"
+								android:layout_width="wrap_content"
+								android:layout_height="wrap_content"
+								android:layout_marginBottom="10dp"
+								android:text="Lorem ipsum dolor sit amet" />
+			
+							<Button
+								android:id="@+id/detallesButton"
+								android:layout_width="100dp"
+								android:layout_height="35dp"
+								android:layout_gravity="center"
+								app:background="@drawable/boton"
+								android:text="Detalles"
+								android:textColor="#FFFFFF"
+								android:textSize="11sp"
+								tools:ignore="TouchTargetSizeCheck" />
+						</LinearLayout>
+			
+			
+					</RelativeLayout>
+				</LinearLayout>
+		</androidx.cardview.widget.CardView>
+		
+	
+	
+Elementos Java
+
+	- Crear una clase ListElement, clase java normal para declarar el objeto necesario.
+	
+	-Crear una clase Adapter, para enlazar los distintos objetos
+		1. Extiende de ...
+			public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> 
+			
+		2. Parametro necesarios:
+			private List<ListElementBicis> miData;
+			private LayoutInflater mInflater;
+			private Context context;
+		
+		3. Metodos necesarios que implementa la clase
+			@Override
+			public int getItemCount() {
+				return miData.size();
+			}
+			
+			@Override
+			public ListAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+				View view = mInflater.inflate(R.layout.list_element, null);
+				return new ListAdapter.ViewHolder(view);
+			}
+			
+			@Override
+			public void onBindViewHolder(final ListAdapter.ViewHolder holder, int position) {
+				holder.bindData(miData.get(position));
+			}
+			
+			//Seter de datos
+			public  void setItems(List<ListElementBicis> items) {
+				miData = items;
+			}
+			
+			public class ViewHolder  extends RecyclerView.ViewHolder{
+			ImageView iconImage;
+			TextView modelo,marca,detalles;
+			Button verMas;
+
+			//Asignacion de campo con el objeto de la vista
+			ViewHolder(View itemView) {
+				super(itemView);
+				iconImage = itemView.findViewById(R.id.iconImageView);
+				modelo = itemView.findViewById(R.id.nombreTextView);
+				marca = itemView.findViewById(R.id.marcaTextView);
+				detalles = itemView.findViewById(R.id.DescripcionTextView);
+				verMas = itemView.findViewById(R.id.detallesButton);
+			}
+			
+			//Se enlazan los campos de la vista con la clase que se utiliza
+			void bindData(final ListElementBicis item) {
+				modelo.setText(item.getModelo());
+				marca.setText(item.getMarca());
+				detalles.setText(item.getDetalles());
+			}
+		}
+		
+		Actividad principal
+		
+		en OnCreate 
+			init();
+			
+		Metodo init();
+			Se crean los objetos y se asignan al adapter
+			
+			ListAdapter listAdapter = new ListAdapter(bicis, this);
+			RecyclerView recyclerView = findViewById(R.id.listaBicis);
+			recyclerView.setHasFixedSize(true);
+			recyclerView.setLayoutManager(new LinearLayoutManager(this));
+			recyclerView.setAdapter(listAdapter);

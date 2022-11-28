@@ -1,0 +1,107 @@
+Spinner y time y date picker
+
+
+Crar un array de string en strings.xml
+	<string-array name="ciudades_array">
+        <item>Madrid</item>
+        <item>Badajoz</item>
+        <item>Barcelona</item>
+        <item>Malaga</item>
+    </string-array>
+
+
+En la actividad crear un objeto spinner
+	<Spinner
+        android:id="@+id/spinner"
+        android:layout_width="284dp"
+        android:layout_height="36dp"
+        android:layout_marginStart="49dp"
+        android:layout_marginTop="52dp"
+        android:layout_marginEnd="78dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+		
+En la actividad principal asignar el array al campo
+
+	    Spinner spinner = (Spinner) findViewById(R.id.spinner);
+
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.ciudades_array, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+		
+		
+Crear los picker, primero se crea un boton y editText para crear el fragmeto, asignar el evento al boton.
+Luego se crean las clase datePicker (hora y fecha), se crrea un constructor para pasar la vista que se quiera editar.
+	DatePickerFragmnet
+		public class DatePickerFragment  extends DialogFragment implements DatePickerDialog.OnDateSetListener {
+
+			EditText vista;
+
+			DatePickerFragment(EditText vista) {
+				this.vista = vista;
+			}
+
+			@Override
+			public Dialog onCreateDialog(Bundle savedInstanceState) {
+				final Calendar c = Calendar.getInstance();
+				int year = c.get(Calendar.YEAR);
+				int month = c.get(Calendar.MONTH);
+				int day = c.get(Calendar.DAY_OF_MONTH);
+
+				return new DatePickerDialog(requireContext(), this, year, month, day);
+			}
+
+			@Override
+			public void onDateSet(DatePicker view, int year, int month, int day) {
+				// Do something with the date chosen by the user
+				//Ej: view.setText(dd/mm/YYYY);
+				vista.setText(String.format(day + "/" + month + "/" +year));
+
+			}
+		}
+
+	
+	TimePickerFragment
+	
+			public class TimeDatePickerFragment  extends DialogFragment implements TimePickerDialog.OnTimeSetListener {
+
+				EditText vista;
+				TimeDatePickerFragment (EditText vista) {
+					this.vista = vista;
+				}
+
+				@Override
+				public Dialog onCreateDialog(Bundle savedInstanceState) {
+					// Use the current time as the default values for the picker
+					final Calendar c = Calendar.getInstance();
+					int hour = c.get(Calendar.HOUR_OF_DAY);
+					int minute = c.get(Calendar.MINUTE);
+
+					// Create a new instance of TimePickerDialog and return it
+					return new TimePickerDialog(getActivity(), this, hour, minute,
+							DateFormat.is24HourFormat(getActivity()));
+				}
+
+
+				@Override
+				public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+					//Do something
+					vista.setText(String.format(hourOfDay + ":" + minute));
+				}
+			}
+	4. SEusan en la actividad principal, antes hay que asignar la vista,  en el metodo onCreate.
+	
+		 public void showTimePickerDialog(View v) {
+			DialogFragment newFragment = new TimeDatePickerFragment(hora);
+			newFragment.show(getSupportFragmentManager(), "timePicker");
+
+		}
+
+    public void showDatePickerDialog(View v) {
+			DialogFragment newFragment = new DatePickerFragment(fecha);
+			newFragment.show(getSupportFragmentManager(), "datePicker");
+		}
+
+ 
